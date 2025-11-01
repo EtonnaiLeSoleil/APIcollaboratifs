@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  if projects.length === 0
+    p No projects found.
+  else
+    each p in projects
+      .project
+        h3
+          a(href=`/projects/${p.id}`) #{p.name}
+        p #{p.description}
+        p Organizer: #{p.organizer} | Members: #{p.members.length}

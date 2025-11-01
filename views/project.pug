@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h2 #{project.name}
+  p #{project.description}
+  p Organizer: #{project.organizer}
+  h3 Members
+  if project.members.length === 0
+    p No members
+  else
+    ul
+      each m in project.members
+        li #{m.name} — #{m.role}
+  if project.specFile
+    p
+      | Spec: 
+      a(href=`/uploads/${project.specFile}`) #{project.specFile}
