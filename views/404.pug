@@ -1,5 +1,9 @@
 extends layout
 
 block content
-  h2 404 — Not found
-  p #{message}
+  div(class="text-center py-16")
+    h2(class="text-4xl font-bold tracking-tight text-gray-900") 404
+    p(class="mt-2 text-base text-gray-500") Page non trouvée
+    p(class="mt-1 text-sm text-gray-500") #{message}
+    div(class="mt-6")
+      a(href="/" class="text-sm font-semibold text-gray-900 hover:underline") Retour à l'accueil

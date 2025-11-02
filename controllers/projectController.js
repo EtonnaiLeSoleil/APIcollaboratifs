@@ -3,21 +3,23 @@ const storage = require('../data/storage');
 // Contrôleurs simples et pédagogiques
 exports.createProject = (req, res, next) => {
   try {
-    const { name, description, organizer } = req.body;
-    const specFile = req.file ? req.file.filename : null;
+  const { name, description, organizer } = req.body;
+  const specFile = req.file ? req.file.filename : null;
 
-    const errors = [];
-    if (!name || typeof name !== 'string' || name.trim().length < 3 || name.trim().length > 100) {
-      errors.push({ path: 'name', message: 'Project name is required and must be between 3 and 100 characters' });
-    }
-    if (!organizer || typeof organizer !== 'string' || organizer.trim().length === 0) {
-      errors.push({ path: 'organizer', message: 'Organizer is required' });
-    }
-    if (!specFile) {
-      errors.push({ path: 'spec', message: 'A valid PDF file is required' });
-    }
-
-    if (errors.length > 0) {
+  const errors = [];
+  if (!name || typeof name !== 'string' || name.trim().length < 3 || name.trim().length > 100) {
+    errors.push({ path: 'name', message: 'Project name is required and must be between 3 and 100 characters' });
+  }
+  if (!organizer || typeof organizer !== 'string' || organizer.trim().length === 0) {
+    errors.push({ path: 'organizer', message: 'Organizer is required' });
+  }
+  // On vérifie que seul l'utilisateur authentifié peut se désigner comme organizer ou avoir les droits spéciaux pour en désigner un autre
+  if (req.user.username !== organizer && !req.user.isAdmin) { // Note: isAdmin serait à implémenter dans le système d'auth
+    return res.status(403).json({ message: 'Vous ne pouvez créer un projet qu\'en tant qu\'organizer ou administrateur' });
+  }
+  if (!specFile) {
+    errors.push({ path: 'spec', message: 'A valid PDF file is required' });
+  }    if (errors.length > 0) {
       return res.status(400).json({ errors });
     }
 

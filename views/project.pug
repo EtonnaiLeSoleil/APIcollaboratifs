@@ -1,17 +1,30 @@
 extends layout
 
 block content
-  h2 #{project.name}
-  p #{project.description}
-  p Organizer: #{project.organizer}
-  h3 Members
-  if project.members.length === 0
-    p No members
-  else
-    ul
-      each m in project.members
-        li #{m.name} — #{m.role}
-  if project.specFile
-    p
-      | Spec: 
-      a(href=`/uploads/${project.specFile}`) #{project.specFile}
+  div(class="bg-white shadow sm:rounded-lg")
+    div(class="px-4 py-5 sm:p-6")
+      h2(class="text-xl font-semibold text-gray-900 mb-2") #{project.name}
+      p(class="mt-1 max-w-2xl text-sm text-gray-500") #{project.description}
+      
+      div(class="mt-6 border-t border-gray-100 pt-6")
+        dl(class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2")
+          div(class="sm:col-span-1")
+            dt(class="text-sm font-medium text-gray-500") Organizer
+            dd(class="mt-1 text-sm text-gray-900") #{project.organizer}
+          if project.specFile
+            div(class="sm:col-span-1")
+              dt(class="text-sm font-medium text-gray-500") Specification
+              dd(class="mt-1 text-sm text-gray-900")
+                a(href=`/uploads/${project.specFile}` class="text-gray-900 hover:underline") #{project.specFile}
+      
+      div(class="mt-6 border-t border-gray-100 pt-6")
+        h3(class="text-base font-semibold leading-6 text-gray-900 mb-4") Members
+        if project.members.length === 0
+          p(class="text-sm text-gray-500") Aucun membre dans ce projet
+        else
+          ul(role="list" class="divide-y divide-gray-100")
+            each m in project.members
+              li(class="flex items-center justify-between py-4")
+                div(class="min-w-0")
+                  p(class="text-sm font-medium text-gray-900") #{m.name}
+                  p(class="text-sm text-gray-500") #{m.role}

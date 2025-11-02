@@ -2,11 +2,19 @@ extends layout
 
 block content
   if projects.length === 0
-    p No projects found.
+    p(class="text-gray-500 text-center py-8") Aucun projet trouvé.
   else
-    each p in projects
-      .project
-        h3
-          a(href=`/projects/${p.id}`) #{p.name}
-        p #{p.description}
-        p Organizer: #{p.organizer} | Members: #{p.members.length}
+    ul(role="list" class="divide-y divide-gray-100")
+      each p in projects
+        li(class="relative bg-white px-4 py-5 hover:bg-gray-50 sm:px-6")
+          .flex.items-center.justify-between
+            div
+              h3(class="text-base font-semibold leading-6 text-gray-900")
+                a(href=`/projects/${p.id}` class="hover:underline") #{p.name}
+              p(class="mt-1 max-w-2xl text-sm text-gray-500") #{p.description}
+            div(class="shrink-0 sm:flex sm:items-end sm:space-x-6")
+              dl(class="flex flex-col text-sm text-right")
+                dt(class="text-gray-500") Organizer
+                dd(class="text-gray-900") #{p.organizer}
+                dt(class="mt-1 text-gray-500") Members
+                dd(class="text-gray-900") #{p.members.length}
