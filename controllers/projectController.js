@@ -1,27 +1,44 @@
 const storage = require('../data/storage');
 
 // Contrôleurs simples et pédagogiques
-exports.createProject = (req, res) => {
-  const { name, description, organizer } = req.body;
-  const specFile = req.file ? req.file.filename : null;
-  if (!name || !organizer || !specFile) {
-    return res.status(400).json({ message: 'name, organizer et spec (PDF) requis' });
-  }
-  // vérification simple de doublon
-  const exists = storage.projects.find(p => p.name === name);
-  if (exists) return res.status(400).json({ message: 'Doublon de nom de projet' });
+exports.createProject = (req, res, next) => {
+  try {
+    const { name, description, organizer } = req.body;
+    const specFile = req.file ? req.file.filename : null;
 
-  const project = {
-    id: storage.nextProjectId++,
-    name,
-    description: description || '',
-    organizer,
-    specFile,
-    members: [],
-    createdAt: new Date().toISOString()
-  };
-  storage.projects.push(project);
-  res.status(201).json({ project });
+    const errors = [];
+    if (!name || typeof name !== 'string' || name.trim().length < 3 || name.trim().length > 100) {
+      errors.push({ path: 'name', message: 'Project name is required and must be between 3 and 100 characters' });
+    }
+    if (!organizer || typeof organizer !== 'string' || organizer.trim().length === 0) {
+      errors.push({ path: 'organizer', message: 'Organizer is required' });
+    }
+    if (!specFile) {
+      errors.push({ path: 'spec', message: 'A valid PDF file is required' });
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({ errors });
+    }
+
+    // vérification simple de doublon
+    const exists = storage.projects.find(p => p.name === name);
+    if (exists) return res.status(409).json({ message: 'Doublon de nom de projet' });
+
+    const project = {
+      id: storage.nextProjectId++,
+      name,
+      description: description || '',
+      organizer,
+      specFile,
+      members: [],
+      createdAt: new Date().toISOString()
+    };
+    storage.projects.push(project);
+    res.status(201).json({ project });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.listProjects = (req, res) => {
